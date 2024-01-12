@@ -19,6 +19,9 @@ protected:
 	void SetupInputComponent() override;
 
 	void RequestJump();
+	void RequestCrouch();
+	void RequestSprint();
+	void RequestStopSprint();
 	void RequestMoveForward(float AxisValue);
 	void RequestMoveRight(float AxisValue);
 	void RequestLookUp(float AxisValue);
