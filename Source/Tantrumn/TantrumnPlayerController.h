@@ -19,9 +19,12 @@ protected:
 	void SetupInputComponent() override;
 
 	void RequestJump();
+	void RequestStopJump();
+
 	void RequestCrouch();
 	void RequestSprint();
 	void RequestStopSprint();
+
 	void RequestMoveForward(float AxisValue);
 	void RequestMoveRight(float AxisValue);
 	void RequestLookUp(float AxisValue);
@@ -33,4 +36,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Look")
 		float BaseLookRightRate = 90.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+		float SprintSpeed = 1200.0f;
 };

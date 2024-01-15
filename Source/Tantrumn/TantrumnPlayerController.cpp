@@ -11,9 +11,12 @@ void ATantrumnPlayerController::SetupInputComponent()
 	if (InputComponent)
 	{
 		InputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ATantrumnPlayerController::RequestJump);
+		InputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ATantrumnPlayerController::RequestStopJump);
+
 		InputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this, &ATantrumnPlayerController::RequestCrouch);
 		InputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this, &ATantrumnPlayerController::RequestSprint);
 		InputComponent->BindAction("Sprint", EInputEvent::IE_Released, this, &ATantrumnPlayerController::RequestStopSprint);
+
 		InputComponent->BindAxis("MoveForward", this, &ATantrumnPlayerController::RequestMoveForward);
 		InputComponent->BindAxis("MoveRight", this, &ATantrumnPlayerController::RequestMoveRight);
 		InputComponent->BindAxis("LookUp", this, &ATantrumnPlayerController::RequestLookUp);
@@ -29,8 +32,17 @@ void ATantrumnPlayerController::RequestJump()
 	}
 }
 
+void ATantrumnPlayerController::RequestStopJump()
+{
+	if (GetCharacter())
+	{
+		GetCharacter()->StopJumping();
+	}
+}
+
 void ATantrumnPlayerController::RequestCrouch()
 {
+	if (!GetCharacter()->GetCharacterMovement()->IsMovingOnGround()) {return;}
 	if (GetCharacter())
 	{
 		if (GetCharacter()->GetCharacterMovement()->IsCrouching())
@@ -48,7 +60,7 @@ void ATantrumnPlayerController::RequestSprint()
 {
 	if (GetCharacter())
 	{
-		GetCharacter()->GetCharacterMovement()->MaxWalkSpeed *=2;
+		GetCharacter()->GetCharacterMovement()->MaxWalkSpeed += SprintSpeed;
 	}
 }
 
@@ -56,7 +68,7 @@ void ATantrumnPlayerController::RequestStopSprint()
 {
 	if (GetCharacter())
 	{
-		GetCharacter()->GetCharacterMovement()->MaxWalkSpeed /= 2;
+		GetCharacter()->GetCharacterMovement()->MaxWalkSpeed -= SprintSpeed;
 	}
 }
 
