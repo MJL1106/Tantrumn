@@ -2,6 +2,8 @@
 
 
 #include "TantrumnCharacterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "TantrumnPlayerController.h"
 
 // Sets default values
 ATantrumnCharacterBase::ATantrumnCharacterBase()
@@ -15,6 +17,10 @@ ATantrumnCharacterBase::ATantrumnCharacterBase()
 void ATantrumnCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	if (GetCharacterMovement())
+	{
+		MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	}
 	
 }
 
@@ -22,6 +28,14 @@ void ATantrumnCharacterBase::BeginPlay()
 void ATantrumnCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (bIsStunned)
+	{
+		bIsStunned = (FApp::GetCurrentTime() - StunBeginTimestamp) < StunTime;
+		if (!bIsStunned)
+		{
+			OnStunEnd();
+		}
+	}
 
 }
 
@@ -30,5 +44,70 @@ void ATantrumnCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ATantrumnCharacterBase::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	ATantrumnPlayerController* TantrumnPlayerController = GetController<ATantrumnPlayerController>();
+	if (TantrumnPlayerController)
+	{
+		const float FallImpactSpeed = FMath::Abs(GetVelocity().Z);
+		if (FallImpactSpeed < MinImpactSpeed)
+		{
+			return;
+		}
+
+		const float DeltaImpact = MaxImpactSpeed - MinImpactSpeed;
+		const float FallRatio = FMath::Clamp((FallImpactSpeed - MinImpactSpeed) / DeltaImpact, 0.0f, 1.0f);
+		const bool bAffectSmall = FallRatio <= 0.5;
+		const bool bAffectLarge = FallRatio > 0.5;
+
+		TantrumnPlayerController->PlayDynamicForceFeedback(FallRatio, 0.5f, bAffectLarge, bAffectSmall, bAffectLarge, bAffectSmall);
+
+		if (bAffectLarge)
+		{
+			OnStunBegin(FallRatio);
+		}
+	}
+}
+
+
+void ATantrumnCharacterBase::RequestSprint()
+{
+	if (!bIsStunned)
+	{
+		GetCharacterMovement()->MaxWalkSpeed += SprintSpeed;
+	}
+}
+
+void ATantrumnCharacterBase::RequestStopSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed -= SprintSpeed;
+}
+
+void ATantrumnCharacterBase::OnStunBegin(float StunRatio)
+{
+	if (bIsStunned)
+	{
+		return;
+	}
+
+	const float StunDelt = MaxStunTime - MinStunTime;
+	StunTime = MinStunTime + (StunRatio * StunDelt);
+	StunBeginTimestamp = FApp::GetCurrentTime();
+}
+
+void ATantrumnCharacterBase::OnStunEnd()
+{
+	// Ensure that the character is marked as no longer stunned
+	bIsStunned = false;
+
+	// Reset the character's movement speed to its normal maximum value
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+	}
 }
 
