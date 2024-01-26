@@ -4,7 +4,15 @@
 #include "TantrumnPlayerController.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "TantrumnCharacterBase.h"
+#include "TantrumnGameModeBase.h"
+
+static TAutoConsoleVariable<bool> CVarDisplayLaunchInputDelta(
+	TEXT("Tantrum.Character.Debug.DisplayLaunchInputDelta"),
+	false,
+	TEXT("Display Launch Input Delta"),
+	ECVF_Default);
 
 void ATantrumnPlayerController::SetupInputComponent()
 {
@@ -22,6 +30,10 @@ void ATantrumnPlayerController::SetupInputComponent()
 		InputComponent->BindAxis("MoveRight", this, &ATantrumnPlayerController::RequestMoveRight);
 		InputComponent->BindAxis("LookUp", this, &ATantrumnPlayerController::RequestLookUp);
 		InputComponent->BindAxis("LookRight", this, &ATantrumnPlayerController::RequestLookRight);
+
+		InputComponent->BindAction(TEXT("PullObject"),EInputEvent::IE_Pressed,this,&ATantrumnPlayerController::RequestPullObjectStart);
+		InputComponent->BindAction(TEXT("PullObject"),EInputEvent::IE_Released,this,&ATantrumnPlayerController::RequestPullObjectStop);
+		InputComponent->BindAction(TEXT("ThrowObjectMouse"),EInputEvent::IE_Pressed,this,&ATantrumnPlayerController::RequestThrowObject);
 	}
 }
 
@@ -99,4 +111,57 @@ void ATantrumnPlayerController::RequestLookUp(float AxisValue)
 void ATantrumnPlayerController::RequestLookRight(float AxisValue)
 {
 	AddYawInput(AxisValue * BaseLookRightRate * GetWorld()->GetDeltaSeconds());
+}
+void ATantrumnPlayerController::RequestThrowObject()
+{
+	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
+	{
+		TantrumnCharacterBase->RequestThrowObject();
+	}
+}
+
+void ATantrumnPlayerController::RequestThrowObject(float AxisValue)
+{
+	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
+	{
+		if (TantrumnCharacterBase->CanThrowObject())
+		{
+			float currentDelta = AxisValue = LastAxis;
+
+			//debug
+			if (CVarDisplayLaunchInputDelta->GetBool())
+			{
+				if (fabs(currentDelta) > 0.0f)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Axis: %f currentDelta %f"), AxisValue, LastAxis);
+				}
+			}
+			LastAxis = AxisValue;
+			const bool IsFlick = fabs(currentDelta) > FlickThreshold;
+			if (IsFlick)
+			{
+				TantrumnCharacterBase->RequestThrowObject();
+			}
+		}
+		else
+		{
+			LastAxis = 0.0f;
+		}
+	}
+}
+
+void ATantrumnPlayerController::RequestPullObjectStart()
+{
+	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
+	{
+		TantrumnCharacterBase->RequestPullObjectStart();
+	}
+}
+
+void ATantrumnPlayerController::RequestPullObjectStop()
+{
+	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
+	{
+		TantrumnCharacterBase->RequestPullObjectStop();
+	}
 }
