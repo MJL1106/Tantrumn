@@ -22,6 +22,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void PlayLandingSound(FVector hitLocation);
+
 	UPROPERTY(EditAnywhere, Category = "Movement")
 		float SprintSpeed = 1200.0f;
 

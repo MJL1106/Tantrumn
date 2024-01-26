@@ -4,6 +4,7 @@
 #include "TantrumnCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TantrumnPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATantrumnCharacterBase::ATantrumnCharacterBase()
@@ -70,6 +71,10 @@ void ATantrumnCharacterBase::Landed(const FHitResult& Hit)
 		{
 			OnStunBegin(FallRatio);
 		}
+
+		auto currentTime = FApp::GetCurrentTime();
+
+		PlayLandingSound(Hit.ImpactPoint);
 	}
 }
 
@@ -97,17 +102,16 @@ void ATantrumnCharacterBase::OnStunBegin(float StunRatio)
 	const float StunDelt = MaxStunTime - MinStunTime;
 	StunTime = MinStunTime + (StunRatio * StunDelt);
 	StunBeginTimestamp = FApp::GetCurrentTime();
+	bIsStunned = true;
+	if (bIsSprinting)
+	{
+		RequestStopSprint();
+	}
 }
 
 void ATantrumnCharacterBase::OnStunEnd()
 {
-	// Ensure that the character is marked as no longer stunned
-	bIsStunned = false;
-
-	// Reset the character's movement speed to its normal maximum value
-	if (GetCharacterMovement())
-	{
-		GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
-	}
+	StunBeginTimestamp = 0.0f;
+	StunTime = 0.0f;
 }
 
