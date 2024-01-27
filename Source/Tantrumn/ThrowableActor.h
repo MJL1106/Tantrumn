@@ -17,7 +17,7 @@ class TANTRUMN_API AThrowableActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AThrowableActor();
-	virtual void Tick(float DeltaTime) override;
+
 
 	UFUNCTION(BlueprintCallable)
 		bool IsIdle() const { return State == EState::Idle; }

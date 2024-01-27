@@ -30,10 +30,10 @@ void ATantrumnPlayerController::SetupInputComponent()
 		InputComponent->BindAxis("MoveRight", this, &ATantrumnPlayerController::RequestMoveRight);
 		InputComponent->BindAxis("LookUp", this, &ATantrumnPlayerController::RequestLookUp);
 		InputComponent->BindAxis("LookRight", this, &ATantrumnPlayerController::RequestLookRight);
+		InputComponent->BindAxis(TEXT("ThrowObjectMouse"), this, &ATantrumnPlayerController::RequestThrowObject);
 
 		InputComponent->BindAction(TEXT("PullObject"),EInputEvent::IE_Pressed,this,&ATantrumnPlayerController::RequestPullObjectStart);
 		InputComponent->BindAction(TEXT("PullObject"),EInputEvent::IE_Released,this,&ATantrumnPlayerController::RequestPullObjectStop);
-		InputComponent->BindAction(TEXT("ThrowObjectMouse"),EInputEvent::IE_Pressed,this,&ATantrumnPlayerController::RequestThrowObject);
 	}
 }
 
@@ -112,13 +112,6 @@ void ATantrumnPlayerController::RequestLookRight(float AxisValue)
 {
 	AddYawInput(AxisValue * BaseLookRightRate * GetWorld()->GetDeltaSeconds());
 }
-void ATantrumnPlayerController::RequestThrowObject()
-{
-	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
-	{
-		TantrumnCharacterBase->RequestThrowObject();
-	}
-}
 
 void ATantrumnPlayerController::RequestThrowObject(float AxisValue)
 {
@@ -128,7 +121,7 @@ void ATantrumnPlayerController::RequestThrowObject(float AxisValue)
 		{
 			float currentDelta = AxisValue = LastAxis;
 
-			//debug
+		
 			if (CVarDisplayLaunchInputDelta->GetBool())
 			{
 				if (fabs(currentDelta) > 0.0f)

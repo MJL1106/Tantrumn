@@ -46,6 +46,10 @@ ATantrumnCharacterBase::ATantrumnCharacterBase()
 void ATantrumnCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	if (GetCharacterMovement())
+	{
+		MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	}
 	
 }
 
@@ -53,7 +57,7 @@ void ATantrumnCharacterBase::BeginPlay()
 void ATantrumnCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	UpdateStun();
 	if (bIsStunned)
 	{
 		return;
@@ -178,6 +182,16 @@ void ATantrumnCharacterBase::RequestPullObjectStop()
 	{
 		CharacterThrowState = ECharacterThrowState::None;
 	}
+}
+
+void ATantrumnCharacterBase::ResetThrowableObject()
+{
+	if (ThrowableActor)
+	{
+		ThrowableActor->Drop();
+	}
+	CharacterThrowState = ECharacterThrowState::None;
+	ThrowableActor = nullptr;
 }
 
 void ATantrumnCharacterBase::OnThrowableAttached(AThrowableActor* InThrowableActor)

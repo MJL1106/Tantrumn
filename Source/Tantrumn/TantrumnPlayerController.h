@@ -21,7 +21,6 @@ class TANTRUMN_API ATantrumnPlayerController : public APlayerController
 protected:
 	// Called when the game starts or when spawned
 	virtual void SetupInputComponent() override;
-	virtual void BeginPlay() override;
 
 	void RequestJump();
 	void RequestStopJump();
@@ -35,8 +34,6 @@ protected:
 	void RequestMoveRight(float AxisValue);
 	void RequestLookUp(float AxisValue);
 	void RequestLookRight(float AxisValue);
-
-	void RequestThrowObject();
 	void RequestThrowObject(float AxisValue);
 
 	void RequestPullObjectStart();
@@ -66,5 +63,5 @@ protected:
 
 public:
 
-
+	virtual void BeginPlay() override;
 };

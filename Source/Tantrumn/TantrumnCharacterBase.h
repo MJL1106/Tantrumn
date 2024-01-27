@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "ThrowableActor.h"
 #include "Sound/SoundCue.h"
 #include "TantrumnCharacterBase.generated.h"
+
+class AThrowableActor;
 
 UENUM(BlueprintType)
 enum class ECharacterThrowState : uint8
@@ -44,18 +45,13 @@ public:
 
 	void OnThrowableAttached(AThrowableActor* InThrowableActor);
 
-	void SphereCastPlayerView();
-
-	void SphereCastActorTransform();
-
-	void LineCastActorTransform();
-
-	void ProcessTraceResult(const FHitResult& HitResult);
-
 	bool CanThrowObject() const { return CharacterThrowState == ECharacterThrowState::Attatched; }
 
 	UFUNCTION(BlueprintPure)
 		bool IsPullingObject() const { return CharacterThrowState == ECharacterThrowState::RequestingPull || CharacterThrowState == ECharacterThrowState::Pulling; }
+
+	UFUNCTION(BlueprintPure)
+		bool IsThrowing() const { return CharacterThrowState == ECharacterThrowState::Throwing; }
 
 	UFUNCTION(BlueprintPure)
 		ECharacterThrowState GetCharacterThrowState() const { return CharacterThrowState; }
@@ -68,8 +64,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	bool PlayThrowMontage();
+	void SphereCastPlayerView();
+	void SphereCastActorTransform();
+	void LineCastActorTransform();
+	void ProcessTraceResult(const FHitResult& HitResult);
 
+	bool PlayThrowMontage();
 	void UnbindMontage();
 
 	UFUNCTION()
@@ -99,7 +99,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Fall Impact")
 		float MaxStunTime = 1.0f;
 
-	USoundCue* HeavyLandSound = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Fall Impact")
+		USoundCue* HeavyLandSound = nullptr;
 
 	float StunTime = 0.0f;
 	float StunBeginTimestamp = 0.0f;
