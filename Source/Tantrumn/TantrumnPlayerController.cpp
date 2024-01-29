@@ -14,6 +14,16 @@ static TAutoConsoleVariable<bool> CVarDisplayLaunchInputDelta(
 	TEXT("Display Launch Input Delta"),
 	ECVF_Default);
 
+
+
+
+void ATantrumnPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	GameModeRef = Cast<ATantrumnGameModeBase>(GetWorld()->GetAuthGameMode());
+}
+
+
 void ATantrumnPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();

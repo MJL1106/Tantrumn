@@ -132,14 +132,17 @@ void AThrowableActor::Launch(const FVector& InitialVelocity, AActor* Target)
 
 void AThrowableActor::Drop()
 {
-	if (State == EState::Attatched)
-	{
-		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	}
+	if (State == EState::Pull || State == EState::Attatched) {
 
-	ProjectileMovementComponent->Activate(true);
-	ProjectileMovementComponent->HomingTargetComponent = nullptr;
-	State = EState::Dropped;
+		if (State == EState::Attatched)
+		{
+			DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		}
+
+		ProjectileMovementComponent->Activate(true);
+		ProjectileMovementComponent->HomingTargetComponent = nullptr;
+		State = EState::Dropped;
+	}
 }
 
 void AThrowableActor::ToggleHighlight(bool bIsOn)

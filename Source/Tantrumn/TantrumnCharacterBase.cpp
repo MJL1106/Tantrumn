@@ -156,7 +156,7 @@ void ATantrumnCharacterBase::RequestThrowObject()
 {
 	if (CanThrowObject())
 	{
-		if (PlayThrowMontage)
+		if (PlayThrowMontage())
 		{
 			CharacterThrowState = ECharacterThrowState::Throwing;
 
