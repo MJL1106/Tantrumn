@@ -40,7 +40,7 @@ void ATantrumnPlayerController::SetupInputComponent()
 		InputComponent->BindAxis("MoveRight", this, &ATantrumnPlayerController::RequestMoveRight);
 		InputComponent->BindAxis("LookUp", this, &ATantrumnPlayerController::RequestLookUp);
 		InputComponent->BindAxis("LookRight", this, &ATantrumnPlayerController::RequestLookRight);
-		InputComponent->BindAxis(TEXT("ThrowObjectMouse"), this, &ATantrumnPlayerController::RequestThrowObject);
+		InputComponent->BindAxis("ThrowObject", this, &ATantrumnPlayerController::RequestThrowObject);
 
 		InputComponent->BindAction(TEXT("PullObject"),EInputEvent::IE_Pressed,this,&ATantrumnPlayerController::RequestPullObjectStart);
 		InputComponent->BindAction(TEXT("PullObject"),EInputEvent::IE_Released,this,&ATantrumnPlayerController::RequestPullObjectStop);
@@ -125,6 +125,7 @@ void ATantrumnPlayerController::RequestLookRight(float AxisValue)
 
 void ATantrumnPlayerController::RequestThrowObject(float AxisValue)
 {
+	//UE_LOG(LogTemp, Warning, TEXT("REQUESTING THROW"));
 	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
 	{
 		if (TantrumnCharacterBase->CanThrowObject())
