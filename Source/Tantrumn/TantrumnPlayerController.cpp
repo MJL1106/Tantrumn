@@ -40,7 +40,7 @@ void ATantrumnPlayerController::SetupInputComponent()
 		InputComponent->BindAxis("MoveRight", this, &ATantrumnPlayerController::RequestMoveRight);
 		InputComponent->BindAxis("LookUp", this, &ATantrumnPlayerController::RequestLookUp);
 		InputComponent->BindAxis("LookRight", this, &ATantrumnPlayerController::RequestLookRight);
-		InputComponent->BindAxis("ThrowObject", this, &ATantrumnPlayerController::RequestThrowObject);
+		InputComponent->BindAction("ThrowObject", EInputEvent::IE_Pressed, this, &ATantrumnPlayerController::RequestThrowObject);
 
 		InputComponent->BindAction(TEXT("PullObject"),EInputEvent::IE_Pressed,this,&ATantrumnPlayerController::RequestPullObjectStart);
 		InputComponent->BindAction(TEXT("PullObject"),EInputEvent::IE_Released,this,&ATantrumnPlayerController::RequestPullObjectStop);
@@ -123,29 +123,13 @@ void ATantrumnPlayerController::RequestLookRight(float AxisValue)
 	AddYawInput(AxisValue * BaseLookRightRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ATantrumnPlayerController::RequestThrowObject(float AxisValue)
+void ATantrumnPlayerController::RequestThrowObject()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("REQUESTING THROW"));
 	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
 	{
 		if (TantrumnCharacterBase->CanThrowObject())
 		{
-			float currentDelta = AxisValue = LastAxis;
-
-		
-			if (CVarDisplayLaunchInputDelta->GetBool())
-			{
-				if (fabs(currentDelta) > 0.0f)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Axis: %f currentDelta %f"), AxisValue, LastAxis);
-				}
-			}
-			LastAxis = AxisValue;
-			const bool IsFlick = fabs(currentDelta) > FlickThreshold;
-			if (IsFlick)
-			{
 				TantrumnCharacterBase->RequestThrowObject();
-			}
 		}
 		else
 		{
