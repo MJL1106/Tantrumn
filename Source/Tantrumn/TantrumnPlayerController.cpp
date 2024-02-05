@@ -49,6 +49,7 @@ void ATantrumnPlayerController::SetupInputComponent()
 
 void ATantrumnPlayerController::RequestJump()
 {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (GetCharacter())
 	{
 		GetCharacter()->Jump();
@@ -65,6 +66,7 @@ void ATantrumnPlayerController::RequestStopJump()
 
 void ATantrumnPlayerController::RequestCrouch()
 {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (!GetCharacter()->GetCharacterMovement()->IsMovingOnGround()) {return;}
 	if (GetCharacter())
 	{
@@ -81,6 +83,7 @@ void ATantrumnPlayerController::RequestCrouch()
 
 void ATantrumnPlayerController::RequestSprint()
 {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
 	{
 		TantrumnCharacterBase->RequestSprint();
@@ -97,6 +100,7 @@ void ATantrumnPlayerController::RequestStopSprint()
 
 void ATantrumnPlayerController::RequestMoveForward(float AxisValue)
 {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (AxisValue != 0.f)
 	{
 		FRotator const ControlSpaceRot = GetControlRotation();
@@ -106,6 +110,7 @@ void ATantrumnPlayerController::RequestMoveForward(float AxisValue)
 
 void ATantrumnPlayerController::RequestMoveRight(float AxisValue)
 {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (AxisValue != 0.f)
 	{
 		FRotator const ControlSpaceRot = GetControlRotation();

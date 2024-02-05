@@ -16,9 +16,8 @@ void ATantrumnGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	CurrentGameState = EGameState::Waiting;
-	//DisplayCountdown();
+	DisplayCountdown();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATantrumnGameModeBase::StartGame, GameCountdownDuration, false);
-	//StartGame();
 }
 
 void ATantrumnGameModeBase::Tick(float DeltaTime)
@@ -31,11 +30,20 @@ EGameState ATantrumnGameModeBase::GetCurrentGameState() const
 	return CurrentGameState;
 }
 
+void ATantrumnGameModeBase::DisplayCountdown() 
+{
+	if (!GameWidgetClass) { return; }
+
+	PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	GameWidget = CreateWidget<UTantrumnGameWidget>(PC, GameWidgetClass);
+	GameWidget->AddToViewport();
+	GameWidget->StartCountdown(GameCountdownDuration, this);
+}
 void ATantrumnGameModeBase::PlayerReachedEnd()
 {
 	CurrentGameState = EGameState::GameOver;
 
-	//GameWidget->LevelComplete();
+	GameWidget->LevelComplete();
 	FInputModeUIOnly InputMode;
 	PC->SetInputMode(InputMode);
 	PC->SetShowMouseCursor(true);
@@ -44,10 +52,7 @@ void ATantrumnGameModeBase::PlayerReachedEnd()
 void ATantrumnGameModeBase::StartGame()
 {
 	CurrentGameState = EGameState::Playing;
-	FInputModeGameOnly InputMode;
-	PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	PC->SetInputMode(InputMode);
-	PC->SetShowMouseCursor(false);
+
 
 }
 

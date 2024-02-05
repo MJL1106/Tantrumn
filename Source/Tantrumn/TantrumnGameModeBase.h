@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "TantrumnGameWidget.h"
 #include "GameFramework/GameModeBase.h"
 #include "TantrumnGameModeBase.generated.h"
 
@@ -33,6 +35,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		EGameState GetCurrentGameState() const;
+
 	void PlayerReachedEnd();
 	virtual void Tick(float DeltaTime) override;
 
@@ -54,12 +57,19 @@ private:
 	bool bIsPlayerBeingRescued = false;
 
 	UPROPERTY(EditAnywhere, Category = "KillZ")
-		float TimeToRescuePlayer = 3.f;
+		float TimeToRescuePlayer = 3.0f;
 
 	UPROPERTY(EditAnywhere, Category = "KillZ")
-		float KillZ = -500.f;
+		float KillZ = -500.0f;
+
+	UPROPERTY()
+		UTantrumnGameWidget* GameWidget;
+	UPROPERTY(EditAnywhere, Category = "Widget")
+		TSubclassOf<UTantrumnGameWidget> GameWidgetClass;
+
 
 	void StartGame();
+	void DisplayCountdown();
 	void DetectPlayerFallingOffWorld(float DeltaTime);
 	void MovingPlayerToGround(APawn* Player, float DeltaTime);
 	void RemovingInputFromPlayer(APawn* Player);
