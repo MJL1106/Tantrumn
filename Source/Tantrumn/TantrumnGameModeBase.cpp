@@ -52,8 +52,10 @@ void ATantrumnGameModeBase::PlayerReachedEnd()
 void ATantrumnGameModeBase::StartGame()
 {
 	CurrentGameState = EGameState::Playing;
-
-
+	FInputModeGameOnly InputMode;
+	PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PC->SetInputMode(InputMode);
+	PC->SetShowMouseCursor(false);
 }
 
 void ATantrumnGameModeBase::DetectPlayerFallingOffWorld(float DeltaTime)

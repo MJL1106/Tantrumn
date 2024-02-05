@@ -18,12 +18,6 @@ void ATantrumnLevelEndtrigger::BeginPlay()
 
 void ATantrumnLevelEndtrigger::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Overlap Event Triggered"));
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap Event Triggered"));
-	}
-
 	if (OtherActor == Cast<ATantrumnCharacterBase>(OtherActor))
 	{
 		GameModeRef->PlayerReachedEnd();
