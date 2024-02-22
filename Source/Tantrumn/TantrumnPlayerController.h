@@ -34,7 +34,7 @@ protected:
 	void RequestMoveRight(float AxisValue);
 	void RequestLookUp(float AxisValue);
 	void RequestLookRight(float AxisValue);
-	void RequestThrowObject();
+	void RequestThrowObject(float AxisValue);
 
 	void RequestPullObjectStart();
 	void RequestPullObjectStop();

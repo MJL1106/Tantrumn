@@ -40,10 +40,11 @@ void ATantrumnPlayerController::SetupInputComponent()
 		InputComponent->BindAxis("MoveRight", this, &ATantrumnPlayerController::RequestMoveRight);
 		InputComponent->BindAxis("LookUp", this, &ATantrumnPlayerController::RequestLookUp);
 		InputComponent->BindAxis("LookRight", this, &ATantrumnPlayerController::RequestLookRight);
-		InputComponent->BindAction("ThrowObject", EInputEvent::IE_Pressed, this, &ATantrumnPlayerController::RequestThrowObject);
+		//InputComponent->BindAction("ThrowObject", EInputEvent::IE_Pressed, this, &ATantrumnPlayerController::RequestThrowObject);
 
 		InputComponent->BindAction(TEXT("PullObject"),EInputEvent::IE_Pressed,this,&ATantrumnPlayerController::RequestPullObjectStart);
 		InputComponent->BindAction(TEXT("PullObject"),EInputEvent::IE_Released,this,&ATantrumnPlayerController::RequestPullObjectStop);
+		InputComponent->BindAxis(TEXT("ThrowObject"), this, &ATantrumnPlayerController::RequestThrowObject);
 	}
 }
 
@@ -128,13 +129,43 @@ void ATantrumnPlayerController::RequestLookRight(float AxisValue)
 	AddYawInput(AxisValue * BaseLookRightRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ATantrumnPlayerController::RequestThrowObject()
+void ATantrumnPlayerController::RequestThrowObject(float AxisValue)
 {
 	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
 	{
+		//if (TantrumnCharacterBase->CanThrowObject())
+		//{
+		//		TantrumnCharacterBase->RequestThrowObject();
+		//}
+		//else
+		//{
+		//	LastAxis = 0.0f;
+		//}
+
 		if (TantrumnCharacterBase->CanThrowObject())
 		{
-				TantrumnCharacterBase->RequestThrowObject();
+			float currentDelta = AxisValue - LastAxis;
+
+			if (CVarDisplayLaunchInputDelta->GetBool())
+			{
+				if (fabs(currentDelta) > 0.0f)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Axis: %f LastAxis: %f currentDelta: %f"), AxisValue, LastAxis);
+				}
+			}
+			LastAxis = AxisValue;
+			const bool IsFlick = fabs(currentDelta) > FlickThreshold;
+			if (IsFlick)
+			{
+				if (AxisValue > 0)
+				{
+					TantrumnCharacterBase->RequestThrowObject();
+				}
+				else
+				{
+					TantrumnCharacterBase->RequestUseObject();
+				}
+			}
 		}
 		else
 		{

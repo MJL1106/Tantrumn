@@ -46,6 +46,7 @@ ATantrumnCharacterBase::ATantrumnCharacterBase()
 void ATantrumnCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	EffectCooldown = DefaultEffectCooldown;
 	if (GetCharacterMovement())
 	{
 		MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
@@ -61,6 +62,20 @@ void ATantrumnCharacterBase::Tick(float DeltaTime)
 	if (bIsStunned)
 	{
 		return;
+	}
+
+	if (bIsUnderEffect)
+	{
+		if (EffectCooldown > 0)
+		{
+			EffectCooldown -= DeltaTime;
+		}
+		else
+		{
+			bIsUnderEffect = false;
+			EffectCooldown = DefaultEffectCooldown;
+			EndEffect();
+		}
 	}
 
 	if (CharacterThrowState == ECharacterThrowState::Throwing)
@@ -192,6 +207,13 @@ void ATantrumnCharacterBase::ResetThrowableObject()
 	}
 	CharacterThrowState = ECharacterThrowState::None;
 	ThrowableActor = nullptr;
+}
+
+void ATantrumnCharacterBase::RequestUseObject()
+{
+	ApplyEffect_Implementation(ThrowableActor->GetEffectType(), true);
+	ThrowableActor->Destroy();
+	ResetThrowableObject();
 }
 
 void ATantrumnCharacterBase::OnThrowableAttached(AThrowableActor* InThrowableActor)
@@ -426,5 +448,43 @@ void ATantrumnCharacterBase::OnStunEnd()
 {
 	StunBeginTimestamp = 0.0f;
 	StunTime = 0.0f;
+}
+
+void ATantrumnCharacterBase::ApplyEffect_Implementation(EEffectType EffectType, bool bIsBuff)
+{
+	UE_LOG(LogTemp, Warning, TEXT("bIsBuff: %s"), bIsBuff ? TEXT("true") : TEXT("false"));
+	if (bIsUnderEffect) return;
+
+	CurrentEffect = EffectType;
+	bIsUnderEffect = true;
+	bIsEffectBuff = bIsBuff;
+	UE_LOG(LogTemp, Warning, TEXT("bIsBuff: %s"), bIsEffectBuff ? TEXT("true") : TEXT("false"));
+	switch (CurrentEffect)
+	{
+		case EEffectType::Speed:
+			UE_LOG(LogTemp, Warning, TEXT("Inside speed case"));
+			UE_LOG(LogTemp, Warning, TEXT("bIsEffectBuff: %s"), bIsEffectBuff ? TEXT("true") : TEXT("false"));
+			bIsEffectBuff ? SprintSpeed *= 100 : GetCharacterMovement()->DisableMovement();
+			break;
+		default:
+			UE_LOG(LogTemp, Warning, TEXT("Missed speed case"));
+			break;
+	}
+}
+
+void ATantrumnCharacterBase::EndEffect()
+{
+	bIsUnderEffect = false;
+
+	switch (CurrentEffect)
+	{
+	case EEffectType::Speed:
+		bIsEffectBuff ? SprintSpeed /= 2, RequestStopSprint() : GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+		break;
+	default:
+		break;
+
+	}
+
 }
 

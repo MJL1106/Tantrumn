@@ -41,6 +41,17 @@ void AThrowableActor::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
 		return;
 	}
 
+
+	if (State == EState::Launch)
+	{
+		IInteractInterface* I = Cast<IInteractInterface>(Other);
+		if (I)
+		{
+			I->Execute_ApplyEffect(Other, EffectType, false);
+		}
+	}
+
+
 	if (PullActor && State == EState::Pull)
 	{
 		if (ATantrumnCharacterBase* TantrumnCharacter = Cast<ATantrumnCharacterBase>(PullActor))
@@ -148,5 +159,10 @@ void AThrowableActor::Drop()
 void AThrowableActor::ToggleHighlight(bool bIsOn)
 {
 	StaticMeshComponent->SetRenderCustomDepth(bIsOn);
+}
+
+EEffectType AThrowableActor::GetEffectType()
+{
+	return EEffectType();
 }
 

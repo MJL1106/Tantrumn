@@ -13,25 +13,23 @@ class UInteractInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
+UENUM(BlueprintType)
+enum class EEffectType : uint8
+{
+	None	UMETA(DisplayName = "None"),
+	Speed	UMETA(DisplayName = "SpeedBuff"),
+	Jump	UMETA(DisplayName = "JumpBuff"),
+	Power	UMETA(DisplayName = "PowerBuff"),
+};
+
 class TANTRUMN_API IInteractInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-
+	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interact")
-		const bool TypedInteract();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interact")
-		void NonTypedInteract();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interact")
-		void SignatureInteract(bool &Return);
-
-
-
+		void ApplyEffect(EEffectType EffectType, bool bIsBuff);
+	
 };
