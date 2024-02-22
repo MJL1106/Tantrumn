@@ -1,0 +1,18 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-DatabaseTestVideo.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\DatabaseTestVideoEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\DatabaseTestVideo.cpp.obj"
+"D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\DatabaseTestVideoGameModeBase.cpp.obj"
+"D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\DataTableExample.cpp.obj"
+"D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\DatabaseTestVideo.init.gen.cpp.obj"
+"D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\DatabaseTestVideoGameModeBase.gen.cpp.obj"
+"D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\DataTableExample.gen.cpp.obj"
+"D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\Default.rc2.res"
+/OUT:"D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\UE4Editor-DatabaseTestVideo.lib"
+/INCLUDE:IMPLEMENT_MODULE_DatabaseTestVideo

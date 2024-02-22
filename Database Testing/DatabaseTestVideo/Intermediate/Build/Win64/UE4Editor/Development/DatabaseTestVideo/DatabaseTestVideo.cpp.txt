@@ -1,0 +1,2 @@
+D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\Definitions.DatabaseTestVideo.h
+D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Source\DatabaseTestVideo\DatabaseTestVideo.h

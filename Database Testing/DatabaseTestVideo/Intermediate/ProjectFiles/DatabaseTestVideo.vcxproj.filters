@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\DatabaseTestVideo.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{C7AD39CF-28AB-4A79-A8C0-AFA07AB7C1AB}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\DatabaseTestVideo.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\DatabaseTestVideoEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <Filter Include="Config">
+      <UniqueIdentifier>{7151AC8E-CE6D-4966-BB48-F7E19157BCF6}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\DatabaseTestVideo">
+      <UniqueIdentifier>{3D656A48-FBB9-423A-93CD-0A9338AB4F36}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\DatabaseTestVideo\DatabaseTestVideo.Build.cs">
+      <Filter>Source\DatabaseTestVideo</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\DatabaseTestVideo\DatabaseTestVideo.cpp">
+      <Filter>Source\DatabaseTestVideo</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DatabaseTestVideo\DatabaseTestVideo.h">
+      <Filter>Source\DatabaseTestVideo</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\DatabaseTestVideo\DatabaseTestVideoGameModeBase.cpp">
+      <Filter>Source\DatabaseTestVideo</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DatabaseTestVideo\DatabaseTestVideoGameModeBase.h">
+      <Filter>Source\DatabaseTestVideo</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\DatabaseTestVideo\DataTableExample.cpp">
+      <Filter>Source\DatabaseTestVideo</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DatabaseTestVideo\DataTableExample.h">
+      <Filter>Source\DatabaseTestVideo</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

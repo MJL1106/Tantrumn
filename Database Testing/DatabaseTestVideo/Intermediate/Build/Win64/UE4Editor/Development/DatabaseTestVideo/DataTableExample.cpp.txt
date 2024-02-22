@@ -1,0 +1,6 @@
+D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\Definitions.DatabaseTestVideo.h
+D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Source\DatabaseTestVideo\DataTableExample.h
+C:\Program Files\Epic Games\UE_4.26\Engine\Source\Runtime\Engine\Classes\Engine/DataTable.h
+C:\Program Files\Epic Games\UE_4.26\Engine\Source\Runtime\Engine\Public\DataTableUtils.h
+C:\Program Files\Epic Games\UE_4.26\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\DataTable.generated.h
+D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Inc\DatabaseTestVideo\DataTableExample.generated.h
