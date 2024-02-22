@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InteractInterface.h"
 #include "GameFramework/Character.h"
 #include "Sound/SoundCue.h"
 #include "TantrumnCharacterBase.generated.h"
@@ -20,7 +21,7 @@ enum class ECharacterThrowState : uint8
 };
 
 UCLASS()
-class TANTRUMN_API ATantrumnCharacterBase : public ACharacter
+class TANTRUMN_API ATantrumnCharacterBase : public ACharacter, public IInteractInterface
 {
 	GENERATED_BODY()
 
