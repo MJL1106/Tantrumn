@@ -36,8 +36,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		EGameState GetCurrentGameState() const;
 
-	void PlayerReachedEnd();
+	void PlayerReachedEnd(APlayerController* PlayerController);
 	virtual void Tick(float DeltaTime) override;
+
+	void ReceivePlayer(APlayerController* PlayerController);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "States")
@@ -46,6 +48,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Game Details")
 		float GameCountdownDuration = 4.0f;
 
+	UFUNCTION(BlueprintCallable, Category = "Game Details")
+		void SetNumExpectedPlayers(uint8 InNumExpectedPlayers) { NumExpectedPlayers = InNumExpectedPlayers; }
+
 	FTimerHandle TimerHandle;
 	APlayerController* PC = nullptr;
 
@@ -53,6 +58,8 @@ private:
 	FVector FallingPosition = FVector::ZeroVector; 
 
 	float CurrentTime = 0.0f; 
+	UPROPERTY(EditAnywhere, Category = "Game Details")
+		uint8 NumExpectedPlayers = 1u;
 
 	bool bIsPlayerBeingRescued = false;
 
@@ -63,12 +70,13 @@ private:
 		float KillZ = -500.0f;
 
 	UPROPERTY()
-		UTantrumnGameWidget* GameWidget;
+		TMap<APlayerController*, UTantrumnGameWidget*> GameWidgets;
 	UPROPERTY(EditAnywhere, Category = "Widget")
 		TSubclassOf<UTantrumnGameWidget> GameWidgetClass;
 
 
 	void StartGame();
+	void AttemptStartGame();
 	void DisplayCountdown();
 	void DetectPlayerFallingOffWorld(float DeltaTime);
 	void MovingPlayerToGround(APawn* Player, float DeltaTime);

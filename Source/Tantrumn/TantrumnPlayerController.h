@@ -25,6 +25,7 @@ protected:
 	void RequestJump();
 	void RequestStopJump();
 
+
 	void RequestCrouch();
 
 	void RequestSprint();
@@ -38,6 +39,12 @@ protected:
 
 	void RequestPullObjectStart();
 	void RequestPullObjectStop();
+
+	UPROPERTY(EditAnywhere, Category = "HUD")
+		TSubclassOf<class UUserWidget> HUDClass;
+
+	UPROPERTY()
+		UUserWidget* HUDWidget;
 
 	UPROPERTY(EditAnywhere, Category = "Look")
 		float BaseLookUpRate = 90.0f;
@@ -64,4 +71,6 @@ protected:
 public:
 
 	virtual void BeginPlay() override;
+
+	virtual void ReceivedPlayer() override;
 };

@@ -65,6 +65,25 @@ void ATantrumnPlayerController::RequestStopJump()
 	}
 }
 
+void ATantrumnPlayerController::ReceivedPlayer()
+{
+	Super::ReceivedPlayer();
+	GameModeRef = Cast<ATantrumnGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (ensureMsgf(GameModeRef, TEXT("ATantrumnPlayerController::ReceivedPLayer missing GameMode Reference")))
+	{
+		GameModeRef->ReceivePlayer(this);
+	}
+
+	if (HUDClass)
+	{
+		HUDWidget = CreateWidget(this, HUDClass);
+		if (HUDWidget)
+		{
+			HUDWidget->AddToPlayerScreen();
+		}
+	}
+}
+
 void ATantrumnPlayerController::RequestCrouch()
 {
 	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }

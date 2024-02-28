@@ -25,6 +25,20 @@ void ATantrumnGameModeBase::Tick(float DeltaTime)
 	DetectPlayerFallingOffWorld(DeltaTime);
 }
 
+void ATantrumnGameModeBase::ReceivePlayer(APlayerController* PlayerController)
+{
+	AttemptStartGame();
+}
+
+void ATantrumnGameModeBase::AttemptStartGame()
+{
+	if (GetNumPlayers() == NumExpectedPlayers)
+	{
+		DisplayCountdown();
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATantrumnGameModeBase::StartGame, GameCountdownDuration, false);
+	}
+}
+
 EGameState ATantrumnGameModeBase::GetCurrentGameState() const
 {
 	return CurrentGameState;
@@ -34,19 +48,39 @@ void ATantrumnGameModeBase::DisplayCountdown()
 {
 	if (!GameWidgetClass) { return; }
 
-	PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	GameWidget = CreateWidget<UTantrumnGameWidget>(PC, GameWidgetClass);
-	GameWidget->AddToViewport();
-	GameWidget->StartCountdown(GameCountdownDuration, this);
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController && PlayerController->PlayerState && !MustSpectate(PlayerController))
+		{
+			if (UTantrumnGameWidget* GameWidget = CreateWidget<UTantrumnGameWidget>(PlayerController, GameWidgetClass))
+			{
+				//GameWidget->AddToViewport();
+				GameWidget->AddToPlayerScreen();
+				GameWidget->StartCountdown(GameCountdownDuration, this);
+				GameWidgets.Add(PlayerController, GameWidget);
+			}
+		}
+	}
+
+	//PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//GameWidget = CreateWidget<UTantrumnGameWidget>(PC, GameWidgetClass);
+	//GameWidget->AddToViewport();
+	//GameWidget->StartCountdown(GameCountdownDuration, this);
 }
-void ATantrumnGameModeBase::PlayerReachedEnd()
+
+
+void ATantrumnGameModeBase::PlayerReachedEnd(APlayerController* PlayerController)
 {
 	CurrentGameState = EGameState::GameOver;
-
-	GameWidget->LevelComplete();
-	FInputModeUIOnly InputMode;
-	PC->SetInputMode(InputMode);
-	PC->SetShowMouseCursor(true);
+	UTantrumnGameWidget** GameWidget = GameWidgets.Find(PlayerController);
+	if (GameWidget)
+	{
+		(*GameWidget)->LevelComplete();
+		FInputModeUIOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->SetShowMouseCursor(true);
+	}
 }
 
 void ATantrumnGameModeBase::StartGame()
