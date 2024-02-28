@@ -211,7 +211,7 @@ void ATantrumnCharacterBase::ResetThrowableObject()
 
 void ATantrumnCharacterBase::RequestUseObject()
 {
-	ApplyEffect_Implementation(ThrowableActor->GetEffectType(), true);
+	ApplyEffect_Implementation(EEffectType::Speed, true);
 	ThrowableActor->Destroy();
 	ResetThrowableObject();
 }
