@@ -211,6 +211,7 @@ void ATantrumnCharacterBase::ResetThrowableObject()
 
 void ATantrumnCharacterBase::RequestUseObject()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Requesting Use Object with EffectType: %d"), static_cast<int>(ThrowableActor->GetEffectType()));
 	ApplyEffect_Implementation(ThrowableActor->GetEffectType(), true);
 	ThrowableActor->Destroy();
 	ResetThrowableObject();
@@ -459,6 +460,7 @@ void ATantrumnCharacterBase::ApplyEffect_Implementation(EEffectType EffectType, 
 	bIsUnderEffect = true;
 	bIsEffectBuff = bIsBuff;
 	UE_LOG(LogTemp, Warning, TEXT("bIsBuff: %s"), bIsEffectBuff ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("CurrentEffect: %d"), static_cast<int>(CurrentEffect));
 	switch (CurrentEffect)
 	{
 		case EEffectType::Speed:

@@ -16,8 +16,9 @@ class UInteractInterface : public UInterface
 UENUM(BlueprintType)
 enum class EEffectType : uint8
 {
-	None	UMETA(DisplayName = "None"),
 	Speed	UMETA(DisplayName = "SpeedBuff"),
+	None	UMETA(DisplayName = "None"),
+	//Speed	UMETA(DisplayName = "SpeedBuff"),
 	Jump	UMETA(DisplayName = "JumpBuff"),
 	Power	UMETA(DisplayName = "PowerBuff"),
 };
