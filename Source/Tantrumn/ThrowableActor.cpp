@@ -163,7 +163,6 @@ void AThrowableActor::ToggleHighlight(bool bIsOn)
 
 EEffectType AThrowableActor::GetEffectType()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ThrowableActor::GetEffectType returning: %d"), static_cast<int>(EEffectType()));
 	return EEffectType();
 }
 
