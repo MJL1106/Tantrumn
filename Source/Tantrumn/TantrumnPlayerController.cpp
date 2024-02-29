@@ -20,7 +20,7 @@ static TAutoConsoleVariable<bool> CVarDisplayLaunchInputDelta(
 void ATantrumnPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	GameModeRef = Cast<ATantrumnGameModeBase>(GetWorld()->GetAuthGameMode());
+	//GameModeRef = Cast<ATantrumnGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 
@@ -86,7 +86,7 @@ void ATantrumnPlayerController::ReceivedPlayer()
 
 void ATantrumnPlayerController::RequestCrouch()
 {
-	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
+
 	if (!GetCharacter()->GetCharacterMovement()->IsMovingOnGround()) {return;}
 	if (GetCharacter())
 	{
@@ -103,7 +103,7 @@ void ATantrumnPlayerController::RequestCrouch()
 
 void ATantrumnPlayerController::RequestSprint()
 {
-	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
+	
 	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
 	{
 		TantrumnCharacterBase->RequestSprint();
@@ -120,7 +120,7 @@ void ATantrumnPlayerController::RequestStopSprint()
 
 void ATantrumnPlayerController::RequestMoveForward(float AxisValue)
 {
-	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
+	
 	if (AxisValue != 0.f)
 	{
 		FRotator const ControlSpaceRot = GetControlRotation();
@@ -130,7 +130,7 @@ void ATantrumnPlayerController::RequestMoveForward(float AxisValue)
 
 void ATantrumnPlayerController::RequestMoveRight(float AxisValue)
 {
-	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
+	
 	if (AxisValue != 0.f)
 	{
 		FRotator const ControlSpaceRot = GetControlRotation();
@@ -152,14 +152,6 @@ void ATantrumnPlayerController::RequestThrowObject(float AxisValue)
 {
 	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(GetCharacter()))
 	{
-		//if (TantrumnCharacterBase->CanThrowObject())
-		//{
-		//		TantrumnCharacterBase->RequestThrowObject();
-		//}
-		//else
-		//{
-		//	LastAxis = 0.0f;
-		//}
 
 		if (TantrumnCharacterBase->CanThrowObject())
 		{

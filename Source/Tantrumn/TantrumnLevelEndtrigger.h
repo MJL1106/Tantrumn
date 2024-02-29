@@ -12,7 +12,7 @@ class ATantrumnGameModeBase;
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, BlueprintType)
 class TANTRUMN_API ATantrumnLevelEndtrigger : public ATriggerVolume
 {
 	GENERATED_BODY()
