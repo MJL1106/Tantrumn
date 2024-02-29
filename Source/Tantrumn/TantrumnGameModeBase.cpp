@@ -9,6 +9,7 @@
 ATantrumnGameModeBase::ATantrumnGameModeBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 }
 
 void ATantrumnGameModeBase::BeginPlay()

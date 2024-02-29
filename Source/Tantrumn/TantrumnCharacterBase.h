@@ -35,6 +35,10 @@ public:
 
 	virtual void Landed(const FHitResult& Hit) override;
 
+	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode = 0) override;
+	virtual void FellOutOfWorld(const class UDamageType& dmgType) override;
+	
+
 	// Sets default values for this character's properties
 	void RequestSprint();
 	void RequestStopSprint();
@@ -75,6 +79,27 @@ protected:
 	bool PlayThrowMontage();
 	void UnbindMontage();
 
+	UFUNCTION(Server, Reliable)
+		void ServerPullObject(AThrowableActor* InThrowableActor);
+
+	UFUNCTION(Server, Reliable)
+		void ServerRequestPullObject(bool bIsPulling);
+
+	UFUNCTION(Server, Reliable)
+		void ServerRequestThrowObject();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void MulticastRequestThrowObject();
+
+	UFUNCTION(Client, Reliable)
+		void ClientThrowableAttached(AThrowableActor* InThrowableActor);
+
+	UFUNCTION(Server, Reliable)
+		void ServerBeginThrow();
+
+	UFUNCTION(Server, Reliable)
+		void ServerFinishThrow();
+
 	UFUNCTION()
 		void OnMontageBlendingOut(UAnimMontage* Montage, bool bInterrupted);
 
@@ -105,6 +130,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Fall Impact")
 		USoundCue* HeavyLandSound = nullptr;
 
+	void UpdateRescue(float DeltaTime);
+	void StartRescue();
+	void EndRescue();
+
 	float StunTime = 0.0f;
 	float StunBeginTimestamp = 0.0f;
 
@@ -117,8 +146,11 @@ protected:
 	void UpdateStun();
 	void OnStunEnd();
 
-	UPROPERTY(VisibleAnywhere, Category = "Throw")
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_CharacterThrowState, Category = "Throw")
 		ECharacterThrowState CharacterThrowState = ECharacterThrowState::None;
+
+	UFUNCTION()
+		void OnRep_CharacterThrowState(const ECharacterThrowState& OldCharacterThrowState);
 
 	UPROPERTY(EditAnywhere, Category = "Throw", meta = (ClampMin = "0.0", Unnit = "ms"))
 		float ThrowSpeed = 2000.0f;
@@ -128,6 +160,13 @@ protected:
 
 	FOnMontageBlendingOutStarted BlendingOutDelegate;
 	FOnMontageEnded MontageEndedDelegate;
+
+	FVector LastGroundPosition = FVector::ZeroVector; //Last Position on World when OnGround
+	FVector FallOutOfWorldPosition = FVector::ZeroVector; //Position From Player when it Hits KillZ
+	float CurrentRescueTime = 0.0f; // Used to set a timer from Moving Player back to Ground
+	bool bIsPlayerBeingRescued = false;//Set to true in fell out of world
+	UPROPERTY(EditAnywhere, Category = "KillZ")
+	float TimeToRescuePlayer = 3.f;//Set time that takes to put Player back in Ground
 
 private:
 
