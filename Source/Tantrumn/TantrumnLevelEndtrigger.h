@@ -28,6 +28,4 @@ private:
 	
 	UFUNCTION()
 		void OnOverlapBegin(class AActor* OverlappedActor, class AActor* OtherActor);
-
-	ATantrumnGameModeBase* GameModeRef;
 };

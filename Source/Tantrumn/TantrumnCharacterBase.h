@@ -66,6 +66,15 @@ public:
 	UFUNCTION(BlueprintPure)
 		bool IsStunned() const { return bIsStunned; }
 
+	UFUNCTION(BlueprintPure)
+		bool IsBeingRescued() const { return bIsBeingRescued; }
+
+	UFUNCTION(BlueprintPure)
+		bool IsHovering() const;
+
+	UFUNCTION(Server, Reliable)
+		void ServerPlayCelebrateMontage();
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -77,7 +86,16 @@ protected:
 	void ProcessTraceResult(const FHitResult& HitResult);
 
 	bool PlayThrowMontage();
+	bool PlayCelebrateMontage();
 	void UnbindMontage();
+	void UpdateThrowMontagePlayRate();
+
+
+	UFUNCTION(Server, Reliable)
+	void ServerSprintStart();
+
+	UFUNCTION(Server, Reliable)
+	void ServerSprintEnd();
 
 	UFUNCTION(Server, Reliable)
 		void ServerPullObject(AThrowableActor* InThrowableActor);
@@ -136,6 +154,7 @@ protected:
 
 	float StunTime = 0.0f;
 	float StunBeginTimestamp = 0.0f;
+	float CurrentStunTimer = 0.0f;
 
 	bool bIsStunned = false;
 	bool bIsSprinting = false;
@@ -143,7 +162,7 @@ protected:
 	float MaxWalkSpeed = 0.0f;
 
 	void OnStunBegin(float StunRatio);
-	void UpdateStun();
+	void UpdateStun(float DeltaTime);
 	void OnStunEnd();
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_CharacterThrowState, Category = "Throw")
@@ -158,15 +177,26 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Animation")
 		UAnimMontage* ThrowMontage = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = "Animation")
+		UAnimMontage* CelebrateMontage = nullptr;
+
 	FOnMontageBlendingOutStarted BlendingOutDelegate;
 	FOnMontageEnded MontageEndedDelegate;
 
-	FVector LastGroundPosition = FVector::ZeroVector; //Last Position on World when OnGround
-	FVector FallOutOfWorldPosition = FVector::ZeroVector; //Position From Player when it Hits KillZ
-	float CurrentRescueTime = 0.0f; // Used to set a timer from Moving Player back to Ground
-	bool bIsPlayerBeingRescued = false;//Set to true in fell out of world
+	UPROPERTY(replicated)
+		FVector LastGroundPosition = FVector::ZeroVector;
+
+	UPROPERTY(ReplicatedUsing = OnRep_IsBeingRescued)
+		bool bIsBeingRescued = false;
+
+	UFUNCTION()
+		void OnRep_IsBeingRescued();
+
 	UPROPERTY(EditAnywhere, Category = "KillZ")
-	float TimeToRescuePlayer = 3.f;//Set time that takes to put Player back in Ground
+		float TimeToRescuePlayer = 3.f;
+
+	FVector FallOutOfWorldPosition = FVector::ZeroVector;
+	float CurrentRescueTime = 0.0f;
 
 private:
 
@@ -174,7 +204,7 @@ private:
 		AThrowableActor* ThrowableActor;
 
 	void ApplyEffect_Implementation(EEffectType EffectType, bool bIsBuff) override;
-
+	void UpdateEffect(float DeltaTime);
 	void EndEffect();
 
 	bool bIsUnderEffect = false;

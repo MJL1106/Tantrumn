@@ -8,6 +8,7 @@
 #include "TantrumnPlayerController.generated.h"
 
 class ATantrumnGameModeBase;
+class ATantrumnGameStateBase;
 class UUserWidget;
 
 /**
@@ -21,6 +22,8 @@ class TANTRUMN_API ATantrumnPlayerController : public APlayerController
 protected:
 	// Called when the game starts or when spawned
 	virtual void SetupInputComponent() override;
+
+	bool CanProcessRequest() const;
 
 	void RequestJump();
 	void RequestStopJump();
@@ -52,16 +55,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Look")
 		float BaseLookRightRate = 90.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Movement")
+	/*UPROPERTY(EditAnywhere, Category = "Movement")
 		float SprintSpeed = 1200.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 		float DefaultWalkSpeed = 0.0f;
+		*/
 
 	UPROPERTY(EditAnywhere, Category = "Sound")
 		USoundCue* JumpSound = nullptr;
 
-	ATantrumnGameModeBase* GameModeRef;
+	UPROPERTY()
+		ATantrumnGameStateBase* TantrumnGameState;
 
 	float LastAxis = 0.0f;
 
@@ -73,4 +78,20 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void ReceivedPlayer() override;
+
+	virtual void OnPossess(APawn* aPawn) override;
+	virtual void OnUnPossess() override;
+
+
+	UFUNCTION(Client, Reliable)
+	void ClientDisplayCountdown(float GameCountdownDuration);
+
+	UFUNCTION(Client, Reliable)
+		void ClientRestartGame();
+
+	UFUNCTION(Client, Reliable)
+		void ClientReachedEnd();
+
+	UFUNCTION(Client, Reliable)
+		void ServerRestartLevel();
 };

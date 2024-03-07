@@ -3,145 +3,132 @@
 
 #include "TantrumnGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "TantrumnGameInstance.h"
+#include "TantrumnGameStateBase.h"
+#include "TantrumnPlayerController.h"
+#include "TantrumnPlayerState.h"
 
 ATantrumnGameModeBase::ATantrumnGameModeBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void ATantrumnGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+	if (ATantrumnGameStateBase* TantrumnGameState = GetGameState<ATantrumnGameStateBase>())
+	{
+		TantrumnGameState->SetGameState(EGameState::Waiting);
+	}
 
-	CurrentGameState = EGameState::Waiting;
-	DisplayCountdown();
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATantrumnGameModeBase::StartGame, GameCountdownDuration, false);
-}
-
-void ATantrumnGameModeBase::Tick(float DeltaTime)
-{
-	DetectPlayerFallingOffWorld(DeltaTime);
-}
-
-void ATantrumnGameModeBase::ReceivePlayer(APlayerController* PlayerController)
-{
-	AttemptStartGame();
 }
 
 void ATantrumnGameModeBase::AttemptStartGame()
 {
+	if (ATantrumnGameStateBase* TantrumnGameState = GetGameState<ATantrumnGameStateBase>())
+	{
+		TantrumnGameState->SetGameState(EGameState::Waiting);
+	}
 	if (GetNumPlayers() == NumExpectedPlayers)
 	{
+		//this needs to be replicated, call a function on game instance and replicate
 		DisplayCountdown();
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATantrumnGameModeBase::StartGame, GameCountdownDuration, false);
+		if (GameCountdownDuration > SMALL_NUMBER)
+		{
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATantrumnGameModeBase::StartGame, GameCountdownDuration, false);
+		}
+		else
+		{
+			//this is always called from the authority, aka here
+			StartGame();
+		}
+
+	}
+}
+//this needs to be done on the game instance...
+void ATantrumnGameModeBase::DisplayCountdown()
+{
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController && PlayerController->PlayerState && !MustSpectate(PlayerController))
+		{
+			if (ATantrumnPlayerController* TantrumnPlayerController = Cast< ATantrumnPlayerController>(PlayerController))
+			{
+				TantrumnPlayerController->ClientDisplayCountdown(GameCountdownDuration);
+			}
+		}
 	}
 }
 
-EGameState ATantrumnGameModeBase::GetCurrentGameState() const
+void ATantrumnGameModeBase::StartGame()
 {
-	return CurrentGameState;
-}
-
-void ATantrumnGameModeBase::DisplayCountdown() 
-{
-	if (!GameWidgetClass) { return; }
+	if (ATantrumnGameStateBase* TantrumnGameState = GetGameState<ATantrumnGameStateBase>())
+	{
+		TantrumnGameState->SetGameState(EGameState::Playing);
+		TantrumnGameState->ClearResults();
+	}
 
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		APlayerController* PlayerController = Iterator->Get();
 		if (PlayerController && PlayerController->PlayerState && !MustSpectate(PlayerController))
 		{
-			if (UTantrumnGameWidget* GameWidget = CreateWidget<UTantrumnGameWidget>(PlayerController, GameWidgetClass))
+			//cast and start?
+			//this does not work on all controllers...
+			FInputModeGameOnly InputMode;
+			PlayerController->SetInputMode(InputMode);
+			PlayerController->SetShowMouseCursor(false);
+
+			ATantrumnPlayerState* PlayerState = PlayerController->GetPlayerState<ATantrumnPlayerState>();
+			if (PlayerState)
 			{
-				//GameWidget->AddToViewport();
-				GameWidget->AddToPlayerScreen();
-				GameWidget->StartCountdown(GameCountdownDuration, this);
-				GameWidgets.Add(PlayerController, GameWidget);
+				PlayerState->SetCurrentState(EPlayerGameState::Playing);
+				PlayerState->SetIsWinner(false);
+			}
+		}
+	}
+}
+
+void ATantrumnGameModeBase::RestartPlayer(AController* NewPlayer)
+{
+	Super::RestartPlayer(NewPlayer);
+
+	if (APlayerController* PlayerController = Cast<APlayerController>(NewPlayer))
+	{
+		if (PlayerController->GetCharacter() && PlayerController->GetCharacter()->GetCharacterMovement())
+		{
+			PlayerController->GetCharacter()->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+			ATantrumnPlayerState* PlayerState = PlayerController->GetPlayerState<ATantrumnPlayerState>();
+			if (PlayerState)
+			{
+				PlayerState->SetCurrentState(EPlayerGameState::Waiting);
 			}
 		}
 	}
 
-	//PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	//GameWidget = CreateWidget<UTantrumnGameWidget>(PC, GameWidgetClass);
-	//GameWidget->AddToViewport();
-	//GameWidget->StartCountdown(GameCountdownDuration, this);
+	AttemptStartGame();
 }
 
-
-void ATantrumnGameModeBase::PlayerReachedEnd(APlayerController* PlayerController)
+void ATantrumnGameModeBase::RestartGame()
 {
-	CurrentGameState = EGameState::GameOver;
-	UTantrumnGameWidget** GameWidget = GameWidgets.Find(PlayerController);
-	if (GameWidget)
+	ResetLevel();
+	//RestartGame();
+	//GetWorld()->ServerTravel(TEXT("?Restart"), false);
+	//ProcessServerTravel("?Restart");
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		(*GameWidget)->LevelComplete();
-		FInputModeUIOnly InputMode;
-		PlayerController->SetInputMode(InputMode);
-		PlayerController->SetShowMouseCursor(true);
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController && PlayerController->PlayerState && !MustSpectate(PlayerController))
+		{
+			//call something to clean up the hud 
+			if (ATantrumnPlayerController* TantrumnPlayerController = Cast< ATantrumnPlayerController>(PlayerController))
+			{
+				TantrumnPlayerController->ClientRestartGame();
+			}
+			RestartPlayer(PlayerController);
+		}
 	}
 }
-
-void ATantrumnGameModeBase::StartGame()
-{
-	CurrentGameState = EGameState::Playing;
-	FInputModeGameOnly InputMode;
-	PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	PC->SetInputMode(InputMode);
-	PC->SetShowMouseCursor(false);
-}
-
-void ATantrumnGameModeBase::DetectPlayerFallingOffWorld(float DeltaTime)
-{
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-
-	if (PlayerPawn->GetMovementComponent()->IsMovingOnGround())
-	{
-		OnGroundLastPosition = PlayerPawn->GetActorLocation();
-
-	}
-
-	if (PlayerPawn->GetActorLocation().Z <= KillZ)
-	{
-		FallingPosition = PlayerPawn->GetActorLocation();
-		RemovingInputFromPlayer(PlayerPawn);//Also removes collision
-		bIsPlayerBeingRescued = true;
-
-	}
-	if (bIsPlayerBeingRescued)
-	{
-		MovingPlayerToGround(PlayerPawn, DeltaTime);
-	}
-
-}
-
-void ATantrumnGameModeBase::MovingPlayerToGround(APawn* Player, float DeltaTime)
-{
-	CurrentTime += DeltaTime;
-	float Alpha = FMath::Clamp(CurrentTime / TimeToRescuePlayer, 0.0f, 1.0f);
-	FVector NewPlayerLocation = FMath::Lerp(FallingPosition, OnGroundLastPosition, Alpha);
-	Player->SetActorLocation(NewPlayerLocation);
-
-	if (NewPlayerLocation.Equals(OnGroundLastPosition))
-	{
-		CurrentTime = 0.0f;
-		RestoreInputToPlayer(Player);//Also restores collision
-		bIsPlayerBeingRescued = false;
-	}
-
-}
-
-void ATantrumnGameModeBase::RemovingInputFromPlayer(APawn* Player)
-{
-	Player->GetMovementComponent()->Deactivate();
-	Player->SetActorEnableCollision(false);
-}
-void ATantrumnGameModeBase::RestoreInputToPlayer(APawn* Player)
-
-{
-	Player->GetMovementComponent()->Activate();
-	Player->SetActorEnableCollision(true);
-}
-

@@ -3,8 +3,7 @@
 
 #include "TantrumnLevelEndtrigger.h"
 #include "TantrumnCharacterBase.h"
-#include "TantrumnGameModeBase.h"
-#include "TantrumnPlayerController.h"
+#include "TantrumnGameStateBase.h"
 
 ATantrumnLevelEndtrigger::ATantrumnLevelEndtrigger()
 {
@@ -14,15 +13,18 @@ ATantrumnLevelEndtrigger::ATantrumnLevelEndtrigger()
 void ATantrumnLevelEndtrigger::BeginPlay()
 {
 	Super::BeginPlay();
-	GameModeRef = GetWorld()->GetAuthGameMode<ATantrumnGameModeBase>();
+	//GameModeRef = GetWorld()->GetAuthGameMode<ATantrumnGameModeBase>();
 }
 
 void ATantrumnLevelEndtrigger::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
 {
-	if (ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(OtherActor))
-	{
-		APlayerController* PlayerController = TantrumnCharacterBase->GetController<APlayerController>();
-		GameModeRef->PlayerReachedEnd(PlayerController);
+	if (HasAuthority()) {
+
+		if (ATantrumnGameStateBase* TantrumnGameState = GetWorld()->GetGameState<ATantrumnGameStateBase>())
+		{
+			ATantrumnCharacterBase* TantrumnCharacterBase = Cast<ATantrumnCharacterBase>(OtherActor);
+			TantrumnGameState->OnPlayerReachedEnd(TantrumnCharacterBase);
+		}
 	}
 }
 
