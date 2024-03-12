@@ -109,6 +109,9 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 		void MulticastRequestThrowObject();
 
+	UFUNCTION(NetMulticast, Reliable)
+		void MulticastPlayCelebrateMontage();
+
 	UFUNCTION(Client, Reliable)
 		void ClientThrowableAttached(AThrowableActor* InThrowableActor);
 

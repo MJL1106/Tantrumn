@@ -525,6 +525,47 @@ void ATantrumnCharacterBase::ServerFinishThrow_Implementation()
 	ThrowableActor = nullptr;
 }
 
+bool ATantrumnCharacterBase::PlayCelebrateMontage()
+{
+	const float PlayRate = 1.0f;
+	bool bPlayedSuccessfully = PlayAnimMontage(CelebrateMontage, PlayRate) > 0.f;
+	if (bPlayedSuccessfully)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+		if (!MontageEndedDelegate.IsBound())
+		{
+			MontageEndedDelegate.BindUObject(this, &ATantrumnCharacterBase::OnMontageEnded);
+		}
+		AnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, CelebrateMontage);
+	}
+
+	return bPlayedSuccessfully;
+}
+
+void ATantrumnCharacterBase::ServerPlayCelebrateMontage_Implementation()
+{
+	MulticastPlayCelebrateMontage();
+}
+
+void ATantrumnCharacterBase::MulticastPlayCelebrateMontage_Implementation()
+{
+	PlayCelebrateMontage();
+}
+
+void ATantrumnCharacterBase::UpdateThrowMontagePlayRate()
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		if (UAnimMontage* CurrentAnimMontage = AnimInstance->GetCurrentActiveMontage())
+		{
+			//speed up the playrate when at the throwing part of the animation, as the initial interaction animation wasn't intended as a throw so it's rather slow
+			const float PlayRate = AnimInstance->GetCurveValue(TEXT("ThrowCurve"));
+			AnimInstance->Montage_SetPlayRate(CurrentAnimMontage, PlayRate);
+		}
+	}
+}
+
 void ATantrumnCharacterBase::OnNotifyBeginReceived(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
 	// Ignore collisions otherwise the throwable object hits the player capsule and doesn't travel in the desired direction
@@ -570,6 +611,20 @@ void ATantrumnCharacterBase::OnStunBegin(float StunRatio)
 		RequestStopSprint();
 	}
 	GetMesh();
+}
+
+void ATantrumnCharacterBase::UpdateEffect(float DeltaTime)
+{
+	if (EffectCooldown > 0)
+	{
+		EffectCooldown -= DeltaTime;
+	}
+	else
+	{
+		bIsUnderEffect = false;
+		EffectCooldown = DefaultEffectCooldown;
+		EndEffect();
+	}
 }
 
 void ATantrumnCharacterBase::UpdateStun(float DeltaTime)
