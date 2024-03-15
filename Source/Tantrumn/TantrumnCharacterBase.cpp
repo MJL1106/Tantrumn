@@ -445,9 +445,39 @@ void ATantrumnCharacterBase::OnMontageEnded(UAnimMontage* Montage, bool bInterru
 		UnbindMontage();
 	}
 
-	CharacterThrowState = ECharacterThrowState::None;
-	ServerFinishThrow();
-	ThrowableActor = nullptr;
+	if (Montage == ThrowMontage)
+	{
+		if (IsLocallyControlled())
+		{
+			CharacterThrowState = ECharacterThrowState::None;
+			ServerFinishThrow();
+			ThrowableActor = nullptr;
+		}
+	}
+	else if (Montage == CelebrateMontage)
+	{
+		if (IsLocallyControlled())
+		{
+			if (UTantrumnGameInstance* TantrumnGameInstance = GetWorld()->GetGameInstance<UTantrumnGameInstance>())
+			{
+				ATantrumnPlayerController* TantrumnPlayerController = GetController<ATantrumnPlayerController>();
+				if (TantrumnPlayerController)
+				{
+					TantrumnGameInstance->DisplayLevelComplete(TantrumnPlayerController);
+				}
+
+			}
+		}
+
+		if (ATantrumnPlayerState* TantrumnPlayerState = GetPlayerState<ATantrumnPlayerState>())
+		{
+			if (TantrumnPlayerState->IsWinner())
+			{
+				PlayAnimMontage(CelebrateMontage, 1.0f, TEXT("Winner"));
+			}
+		}
+
+	}
 }
 
 void ATantrumnCharacterBase::ServerRequestThrowObject_Implementation()
