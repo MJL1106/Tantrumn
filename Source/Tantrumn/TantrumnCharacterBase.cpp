@@ -187,8 +187,10 @@ void ATantrumnCharacterBase::OnMovementModeChanged(EMovementMode PrevMovementMod
 
 void ATantrumnCharacterBase::FellOutOfWorld(const UDamageType& dmgType)
 {
-	FallOutOfWorldPosition = GetActorLocation();
-	StartRescue();
+	if (HasAuthority())
+	{
+		StartRescue();
+	}
 }
 
 
