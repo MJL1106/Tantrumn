@@ -279,6 +279,33 @@ void ATantrumnCharacterBase::OnThrowableAttached(AThrowableActor* InThrowableAct
 	ClientThrowableAttached(InThrowableActor);
 }
 
+bool ATantrumnCharacterBase::AttemptPullObjectAtLocation(const FVector& InLocation)
+{
+	if (CharacterThrowState != ECharacterThrowState::None || CharacterThrowState != ECharacterThrowState::RequestingPull)
+	{
+		return false;
+	}
+
+	FVector StartPos = GetActorLocation();
+	FVector EndPos = InLocation;
+	FHitResult HitResult;
+	GetWorld() ? GetWorld()->LineTraceSingleByChannel(HitResult, StartPos, EndPos, ECollisionChannel::ECC_Visibility) : false;
+#if ENABLE_DRAW_DEBUG
+	if (CVarDisplayTrace->GetBool())
+	{
+		DrawDebugLine(GetWorld(), StartPos, EndPos, HitResult.bBlockingHit ? FColor::Red : FColor::White, false);
+	}
+#endif
+	CharacterThrowState = ECharacterThrowState::RequestingPull;
+	ProcessTraceResult(HitResult, false);
+	if (CharacterThrowState == ECharacterThrowState::Pulling)
+	{
+		return true;
+	}
+	CharacterThrowState = ECharacterThrowState::None;
+	return false;
+}
+
 void ATantrumnCharacterBase::SphereCastPlayerView()
 {
 	FVector Location;
@@ -348,7 +375,7 @@ void ATantrumnCharacterBase::LineCastActorTransform()
 	ProcessTraceResult(HitResult);
 }
 
-void ATantrumnCharacterBase::ProcessTraceResult(const FHitResult& HitResult) 
+void ATantrumnCharacterBase::ProcessTraceResult(const FHitResult& HitResult, bool bHighlight) 
 {
 	AThrowableActor* HitThrowableActor = HitResult.bBlockingHit ? Cast<AThrowableActor>(HitResult.GetActor()) : nullptr;
 	const bool IsSameActor = (ThrowableActor == HitThrowableActor);
@@ -369,6 +396,15 @@ void ATantrumnCharacterBase::ProcessTraceResult(const FHitResult& HitResult)
 		if (!ThrowableActor)
 		{
 			ThrowableActor = HitThrowableActor;
+			ThrowableActor->ToggleHighlight(true);
+		}
+	}
+
+	if (!IsSameActor)
+	{
+		ThrowableActor = HitThrowableActor;
+		if (bHighlight)
+		{
 			ThrowableActor->ToggleHighlight(true);
 		}
 	}
