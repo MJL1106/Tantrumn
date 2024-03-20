@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TantrumnGameInstance.h"
 #include "TantrumnGameStateBase.h"
+#include "TantrumnAIController.h"
 #include "TantrumnPlayerController.h"
 #include "TantrumnPlayerState.h"
 
@@ -114,6 +115,16 @@ void ATantrumnGameModeBase::RestartPlayer(AController* NewPlayer)
 
 void ATantrumnGameModeBase::RestartGame()
 {
+	for (FConstControllerIterator Iterator = GetWorld()->GetControllerIterator(); Iterator; ++Iterator)
+	{
+		ATantrumnAIController* TantrumnAIController = Cast<ATantrumnAIController>(Iterator->Get());
+		if (TantrumnAIController && TantrumnAIController->GetPawn())
+		{
+			TantrumnAIController->Destroy(true);
+		}
+	}
+
+
 	ResetLevel();
 	//RestartGame();
 	//GetWorld()->ServerTravel(TEXT("?Restart"), false);

@@ -6,11 +6,32 @@
 #include "TantrumnCharacterBase.h"
 #include "TantrumnPlayerController.h"
 #include "TantrumnPlayerState.h"
+#include "TantrumnAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
+void ATantrumnGameStateBase::UpdateResults(ATantrumnPlayerState* PlayerState, ATantrumnCharacterBase* TantrumnCharacter)
+{
+	if (!PlayerState || !TantrumnCharacter)
+	{
+		return;
+	}
+
+	const bool IsWinner = Results.Num() == 0;
+	PlayerState->SetIsWinner(IsWinner);
+
+	PlayerState->SetCurrentState(EPlayerGameState::Finished);
+
+	FGameResult Result;
+	Result.Name = TantrumnCharacter->GetName();
+
+	Result.Time = 5.0f;
+	Results.Add(Result);
+}
  
 void ATantrumnGameStateBase::OnPlayerReachedEnd(ATantrumnCharacterBase* TantrumnCharacter)
 {
 	ensureMsgf(HasAuthority(), TEXT("ATantrumnGameStateBase::OnPlayerReachedEnd being called from Non Authority!"));
+
 	if (ATantrumnPlayerController* TantrumnPlayerController = TantrumnCharacter->GetController<ATantrumnPlayerController>())
 	{
 
@@ -18,22 +39,18 @@ void ATantrumnGameStateBase::OnPlayerReachedEnd(ATantrumnCharacterBase* Tantrumn
 		TantrumnCharacter->GetCharacterMovement()->DisableMovement();
 
 		ATantrumnPlayerState* PlayerState = TantrumnPlayerController->GetPlayerState<ATantrumnPlayerState>();
-		if (PlayerState)
-		{
-			const bool IsWinner = Results.Num() == 0;
-			PlayerState->SetIsWinner(IsWinner);
-			PlayerState->SetCurrentState(EPlayerGameState::Finished);
-		}
+		UpdateResults(PlayerState, TantrumnCharacter);
 
-		FGameResult Result;
-		Result.Name = TantrumnCharacter->GetName();
-		Result.Time = 5.0f;
-		Results.Add(Result);
-
-		if (Results.Num() == PlayerArray.Num())
+		if (Results.Num() >= PlayerArray.Num())
 		{
 			GameState = EGameState::GameOver;
 		}
+	}
+	else if (ATantrumnAIController* TantrumnAIController = TantrumnCharacter->GetController<ATantrumnAIController>())
+	{
+		ATantrumnPlayerState* PlayerState = TantrumnAIController->GetPlayerState<ATantrumnPlayerState>();
+		UpdateResults(PlayerState, TantrumnCharacter);
+		TantrumnAIController->OnReachedEnd();
 	}
 }
 
