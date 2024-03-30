@@ -12,6 +12,8 @@
 #include "TantrumnGameInstance.h"
 #include "TantrumnPlayerState.h"
 
+#include "VisualLogger/VisualLogger.h"
+
 constexpr int CVSphereCastPlayerView = 0;
 constexpr int CVSphereCastActorTransform = 1;
 constexpr int CVLineCastActorTransform = 2;
@@ -36,6 +38,8 @@ static TAutoConsoleVariable<bool> CVarDisplayThrowVelocity(
 	false,
 	TEXT("Display Throw Velocity"),
 	ECVF_Default);
+
+DEFINE_LOG_CATEGORY_STATIC(LogTantrumnChar, Verbose, Verbose)
 
 // Sets default values
 ATantrumnCharacterBase::ATantrumnCharacterBase()
@@ -236,6 +240,8 @@ void ATantrumnCharacterBase::RequestThrowObject()
 	}
 }
 
+
+
 void ATantrumnCharacterBase::RequestPullObjectStart()
 {
 	if (!bIsStunned && CharacterThrowState == ECharacterThrowState::None)
@@ -245,12 +251,30 @@ void ATantrumnCharacterBase::RequestPullObjectStart()
 	}
 }
 
+void ATantrumnCharacterBase::RequestAim() 
+{
+	if (!bIsStunned && CharacterThrowState == ECharacterThrowState::Attatched)
+	{
+		CharacterThrowState = ECharacterThrowState::Aiming;
+		ServerRequestToggleAim(true);
+	}
+}
+
 void ATantrumnCharacterBase::RequestPullObjectStop()
 {
 	if (CharacterThrowState == ECharacterThrowState::RequestingPull)
 	{
 		CharacterThrowState = ECharacterThrowState::None;
 		ServerRequestPullObject(false);
+	}
+}
+
+void ATantrumnCharacterBase::RequestStopAim()
+{
+	if (CharacterThrowState == ECharacterThrowState::Aiming)
+	{
+		CharacterThrowState = ECharacterThrowState::Attatched;
+		ServerRequestToggleAim(false);
 	}
 }
 
@@ -277,6 +301,11 @@ void ATantrumnCharacterBase::OnThrowableAttached(AThrowableActor* InThrowableAct
 	ThrowableActor = InThrowableActor;
 	MoveIgnoreActorAdd(ThrowableActor);
 	ClientThrowableAttached(InThrowableActor);
+}
+
+void ATantrumnCharacterBase::NotifyHitByThrowable(AThrowableActor* InThrowable)
+{
+	OnStunBegin(1.0f);
 }
 
 bool ATantrumnCharacterBase::AttemptPullObjectAtLocation(const FVector& InLocation)
@@ -536,6 +565,11 @@ void ATantrumnCharacterBase::MulticastRequestThrowObject_Implementation()
 	CharacterThrowState = ECharacterThrowState::Throwing;
 }
 
+void ATantrumnCharacterBase::ServerRequestToggleAim_Implementation(bool IsAiming)
+{
+	CharacterThrowState = IsAiming ? ECharacterThrowState::Aiming : ECharacterThrowState::Attatched;
+}
+
 void ATantrumnCharacterBase::ServerRequestPullObject_Implementation(bool bIsPulling)
 {
 	CharacterThrowState = bIsPulling ? ECharacterThrowState::RequestingPull : ECharacterThrowState::None;
@@ -576,6 +610,9 @@ void ATantrumnCharacterBase::ServerBeginThrow_Implementation()
 		const FVector& Start = GetMesh()->GetSocketLocation(TEXT("ObjectAttach"));
 		DrawDebugLine(GetWorld(), Start, Start + Direction, FColor::Red, false, 5.0f);
 	}
+
+	const FVector& Start = GetMesh()->GetSocketLocation(TEXT("ObjectAttatch"));
+	UE_VLOG_ARROW(this, LogTantrumnChar, Verbose, Start, Start + Direction, FColor::Red, TEXT("Throw Direction"));
 }
 
 void ATantrumnCharacterBase::ServerFinishThrow_Implementation()
@@ -679,6 +716,7 @@ void ATantrumnCharacterBase::OnStunBegin(float StunRatio)
 		RequestStopSprint();
 	}
 	GetMesh();
+	ResetThrowableObject();
 }
 
 void ATantrumnCharacterBase::UpdateEffect(float DeltaTime)

@@ -27,6 +27,7 @@ protected:
 
 	void RequestJump();
 	void RequestStopJump();
+	
 
 
 	void RequestCrouch();
@@ -40,8 +41,8 @@ protected:
 	void RequestLookRight(float AxisValue);
 	void RequestThrowObject(float AxisValue);
 
-	void RequestPullObjectStart();
-	void RequestPullObjectStop();
+	void RequestPullorAimObjectStart();
+	void RequestPullorAimObjectStop();
 
 	UPROPERTY(EditAnywhere, Category = "HUD")
 		TSubclassOf<class UUserWidget> HUDClass;

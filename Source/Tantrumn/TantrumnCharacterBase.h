@@ -18,6 +18,7 @@ enum class ECharacterThrowState : uint8
 	Pulling			UMETA(DisplayName = "Pulling"),
 	Attatched		UMETA(DisplayName = "Attatched"),
 	Throwing		UMETA(DisplayName = "Throwing"),
+	Aiming	        UMETA(DisplayName = "Aiming"),
 };
 
 UCLASS()
@@ -42,6 +43,8 @@ public:
 	// Sets default values for this character's properties
 	void RequestSprint();
 	void RequestStopSprint();
+	void RequestAim();
+	void RequestStopAim();
 
 	void RequestThrowObject();
 	void RequestPullObjectStart();
@@ -51,6 +54,8 @@ public:
 	void RequestUseObject();
 
 	void OnThrowableAttached(AThrowableActor* InThrowableActor);
+
+	void NotifyHitByThrowable(AThrowableActor* InThrowable);
 
 	bool CanThrowObject() const { return CharacterThrowState == ECharacterThrowState::Attatched; }
 
@@ -63,6 +68,12 @@ public:
 
 	UFUNCTION(BlueprintPure)
 		bool IsThrowing() const { return CharacterThrowState == ECharacterThrowState::Throwing; }
+
+	UFUNCTION(BlueprintPure)
+		bool CanAim() const { return CharacterThrowState == ECharacterThrowState::Attatched;  }
+
+	UFUNCTION(BlueprintPure)
+		bool IsAiming() const { return CharacterThrowState == ECharacterThrowState::Aiming;  }
 
 	UFUNCTION(BlueprintPure)
 		ECharacterThrowState GetCharacterThrowState() const { return CharacterThrowState; }
@@ -103,6 +114,9 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 		void ServerPullObject(AThrowableActor* InThrowableActor);
+
+	UFUNCTION(Server, Reliable)
+		void ServerRequestToggleAim(bool IsAiming);
 
 	UFUNCTION(Server, Reliable)
 		void ServerRequestPullObject(bool bIsPulling);
