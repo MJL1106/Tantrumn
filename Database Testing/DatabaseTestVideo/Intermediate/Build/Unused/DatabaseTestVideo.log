@@ -1,0 +1,16 @@
+﻿  Parsing headers for DatabaseTestVideoEditor
+    Running UnrealHeaderTool "D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\DatabaseTestVideo.uproject" "D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\DatabaseTestVideoEditor\Development\DatabaseTestVideoEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -abslog="C:\Users\Matthew Lowe\AppData\Local\UnrealBuildTool\Log_UHT.txt" -installed
+  Reflection code generated for DatabaseTestVideoEditor in 3.0738999 seconds
+  Building DatabaseTestVideoEditor...
+  Using Visual Studio 2019 14.29.30152 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133) and Windows 10.0.22621.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+  Building 6 actions with 16 processes...
+    [1/6] DatabaseTestVideo.init.gen.cpp
+    [2/6] DataTableExample.cpp
+    [3/6] DataTableExample.gen.cpp
+    [4/6] UE4Editor-DatabaseTestVideo.lib
+       Creating library D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\UE4Editor-DatabaseTestVideo.lib and object D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\UE4Editor-DatabaseTestVideo.exp
+    [5/6] UE4Editor-DatabaseTestVideo.dll
+       Creating library D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\UE4Editor-DatabaseTestVideo.suppressed.lib and object D:\Unreal Projects\Tantrumn\Database Testing\DatabaseTestVideo\Intermediate\Build\Win64\UE4Editor\Development\DatabaseTestVideo\UE4Editor-DatabaseTestVideo.suppressed.exp
+    [6/6] DatabaseTestVideoEditor.target
+  Total time in Parallel executor: 1.56 seconds
+  Total execution time: 5.16 seconds

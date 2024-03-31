@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "DatabaseTestVideo",
+			"Path": "D:\\Unreal Projects\\Tantrumn\\Database Testing\\DatabaseTestVideo\\Source\\DatabaseTestVideo.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "DatabaseTestVideoEditor",
+			"Path": "D:\\Unreal Projects\\Tantrumn\\Database Testing\\DatabaseTestVideo\\Source\\DatabaseTestVideoEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

@@ -72,21 +72,4 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
-*.ini
-*.ini
-*.log
-Saved/Config/CrashReportClient/UE4CC-Windows-C440A53F4078E6742B2D8C991F40055D/CrashReportClient.ini
-Saved/Config/CrashReportClient/UE4CC-Windows-9E6071E14193F4D60AA0959C0B13398E/CrashReportClient.ini
-Saved/Config/CrashReportClient/UE4CC-Windows-9E6071E14193F4D60AA0959C0B13398E/CrashReportClient.ini
-.vs/Abstraction/v16/.suo
-*.log
-*.dat
-*.bin
-*.bin
-*.fbx
-*.ini
-*.log
-*.png
-*.json
-*.bin
-*.log
+
