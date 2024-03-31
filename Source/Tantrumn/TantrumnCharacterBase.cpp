@@ -351,7 +351,7 @@ void ATantrumnCharacterBase::SphereCastPlayerView()
 	{
 		if (ThrowableActor)
 		{
-			ThrowableActor->ToggleHighlight(false);
+			//ThrowableActor->ToggleHighlight(false);
 			ThrowableActor = nullptr;
 		}
 		return;
@@ -415,7 +415,7 @@ void ATantrumnCharacterBase::ProcessTraceResult(const FHitResult& HitResult, boo
 
 		if (!IsValidTarget || !IsSameActor)
 		{
-			ThrowableActor->ToggleHighlight(false);
+			//ThrowableActor->ToggleHighlight(false);
 			ThrowableActor = nullptr;
 		}
 	}
@@ -425,17 +425,17 @@ void ATantrumnCharacterBase::ProcessTraceResult(const FHitResult& HitResult, boo
 		if (!ThrowableActor)
 		{
 			ThrowableActor = HitThrowableActor;
-			ThrowableActor->ToggleHighlight(true);
+			//ThrowableActor->ToggleHighlight(true);
 		}
 	}
 
 	if (!IsSameActor)
 	{
 		ThrowableActor = HitThrowableActor;
-		if (bHighlight)
-		{
-			ThrowableActor->ToggleHighlight(true);
-		}
+		//if (bHighlight)
+		//{
+		//	ThrowableActor->ToggleHighlight(true);
+		//}
 	}
 
 	if (CharacterThrowState == ECharacterThrowState::RequestingPull)
@@ -581,7 +581,7 @@ void ATantrumnCharacterBase::ServerPullObject_Implementation(AThrowableActor* In
 	{
 		CharacterThrowState = ECharacterThrowState::Pulling;
 		ThrowableActor = InThrowableActor;
-		ThrowableActor->ToggleHighlight(false);
+		//ThrowableActor->ToggleHighlight(false);
 	}
 }
 
