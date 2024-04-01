@@ -147,7 +147,7 @@ void ATantrumnGameModeBase::RestartGame()
 		APlayerController* PlayerController = Iterator->Get();
 		if (PlayerController && PlayerController->PlayerState && !MustSpectate(PlayerController))
 		{
-			//call something to clean up the hud 
+			
 			if (ATantrumnPlayerController* TantrumnPlayerController = Cast< ATantrumnPlayerController>(PlayerController))
 			{
 				TantrumnPlayerController->ClientRestartGame();
