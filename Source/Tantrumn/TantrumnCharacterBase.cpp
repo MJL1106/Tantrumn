@@ -310,7 +310,7 @@ void ATantrumnCharacterBase::NotifyHitByThrowable(AThrowableActor* InThrowable)
 
 bool ATantrumnCharacterBase::AttemptPullObjectAtLocation(const FVector& InLocation)
 {
-	if (CharacterThrowState != ECharacterThrowState::None || CharacterThrowState != ECharacterThrowState::RequestingPull)
+	if (CharacterThrowState != ECharacterThrowState::None && CharacterThrowState != ECharacterThrowState::RequestingPull)
 	{
 		return false;
 	}
